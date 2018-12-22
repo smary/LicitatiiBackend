@@ -5,6 +5,9 @@ struct UsersController: RouteCollection {
         let usersRoute = router.grouped("api", "users")
         usersRoute.post(use: createUserHandler)
         usersRoute.get(use: getAllUsersHandler)
+        usersRoute.get(User.parameter, "initiatedAuctions", use:getInitiatedAuctionsHandler)
+        usersRoute.get(User.parameter, "activeAuctions", use:getActiveAuctionsHandler)
+        usersRoute.post(User.parameter, "activeAuctions", Auction.parameter, use:addAuctionHandler)
     }
     
     
@@ -24,5 +27,33 @@ struct UsersController: RouteCollection {
     }
     
     
+    // MARK:- Relations
     
+    // get all auctions initiated by a certain user
+    func getInitiatedAuctionsHandler(_ req: Request) throws -> Future<[Auction]> {
+        return try req.parameters.next(User.self).flatMap(to: [Auction].self) { user in
+            return try user.initiatedAuctions.query(on: req).all()
+        }
+    }
+    
+    //get all the actions this user participates in
+    func getActiveAuctionsHandler(_ req: Request) throws -> Future<[Auction]> {
+        return try req.parameters.next(User.self).flatMap(to: [Auction].self) {user in
+            return try user.activeAuctions.query(on: req).all()
+        }
+    }
+    
+    //register this user for a specific auction, adding a new POST route
+    // returns a simple HTTPStatus
+    func addAuctionHandler (_ req: Request) throws -> Future<HTTPStatus> {
+        // pull out both the User and the Auction parameters using the direct call flatMap
+        return try flatMap(to: HTTPStatus.self, req.parameters.next(User.self), req.parameters.next(Auction.self)) {
+            user, auction in
+            // create the pivot, using the requireID function to be sure the user's and the auction's ids have been set
+            let pivot = try AuctionUserPivot(auction.requireID(), user.requireID())
+            //save the pivot and return the result as an HTTPStatus
+            return pivot.save(on: req).transform(to: .ok)
+                            
+        }
+    }
 }

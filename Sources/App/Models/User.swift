@@ -25,3 +25,18 @@ extension User: Migration {}
 /// Allows `User` to be used as a dynamic parameter in route definitions.
 extension User: Parameter {}
 
+
+// get auctions initiated by a certain user
+extension User {
+    var initiatedAuctions: Children<User, Auction> {
+        // return all the children with that ownerID
+        return children(\.ownerID)
+    }
+    
+    
+    // Sibling realtionship with User:
+    // A user can participate on multiple auctions and an auction can have multiple bidders (users)
+    var activeAuctions: Siblings<User, Auction, AuctionUserPivot> {
+        return siblings()
+    }
+}

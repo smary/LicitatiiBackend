@@ -32,3 +32,22 @@ extension Auction: Migration {}
 /// Allows `Auction` to be used as a dynamic parameter in route definitions.
 extension Auction: Parameter {}
 
+
+extension Auction {
+    
+    // Parent-child relationship with the owner of this auction
+    var owner: Parent<Auction, User> {
+        return parent(\.ownerID)
+    }
+    
+    
+    // Sibling realtionship with User:
+    // A user can participate on multiple auctions and an auction can have multiple bidders (users)
+    var bidders: Siblings<Auction, User, AuctionUserPivot> {
+        return siblings()
+    }
+
+}
+
+
+

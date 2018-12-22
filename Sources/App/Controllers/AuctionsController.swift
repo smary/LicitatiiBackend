@@ -5,6 +5,8 @@ struct AuctionsController: RouteCollection {
         let auctionsRoute = router.grouped("api", "auctions")
         auctionsRoute.post(use: createAuctionHandler)
         auctionsRoute.get(use: getAllAuctionsHandler)
+        auctionsRoute.get(Auction.parameter, "owner", use: getOwnerHandler)
+        auctionsRoute.get(Auction.parameter, "bidders", use: getBiddersHandler)
     }
     
     
@@ -23,6 +25,21 @@ struct AuctionsController: RouteCollection {
         return Auction.query(on: req).all()
     }
     
+    // MARK: - Relations
     
+    //get the owner for a particular auction
+    func getOwnerHandler(_ req: Request) throws -> Future<User> {
+        return try req.parameters.next(Auction.self).flatMap(to: User.self) { auction in
+            return auction.owner.get(on: req)
+        }
+    }
+    
+    //get all the bidders of this auction
+    func getBiddersHandler(_ req: Request) throws -> Future<[User]> {
+        return try req.parameters.next(Auction.self).flatMap(to: [User].self) { auction in
+            return try auction.bidders.query(on: req).all()
+        }
+    }
     
 }
+
