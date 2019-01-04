@@ -46,6 +46,12 @@ extension Auction {
     var bidders: Siblings<Auction, User, AuctionUserPivot> {
         return siblings()
     }
+    
+    // Siblings relationship with Category
+    // An auction can be listed under multiple categories and a category can represent multiple auctions
+    var categories: Siblings<Auction, Category, AuctionCategoryPivot> {
+        return siblings()
+    }
 
 }
 

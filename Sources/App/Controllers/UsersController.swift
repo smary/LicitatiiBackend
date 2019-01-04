@@ -3,8 +3,8 @@ import Vapor
 struct UsersController: RouteCollection {
     func boot(router: Router) throws {
         let usersRoute = router.grouped("api", "users")
-        usersRoute.post(use: createUserHandler)
-        usersRoute.get(use: getAllUsersHandler)
+        usersRoute.post(use: createHandler)
+        usersRoute.get(use: getAllHandler)
         usersRoute.get(User.parameter, "initiatedAuctions", use:getInitiatedAuctionsHandler)
         usersRoute.get(User.parameter, "activeAuctions", use:getActiveAuctionsHandler)
         usersRoute.post(User.parameter, "activeAuctions", Auction.parameter, use:addAuctionHandler)
@@ -14,7 +14,7 @@ struct UsersController: RouteCollection {
     // MARK: - CRUD operations
     
     // create user
-    func createUserHandler(_ req: Request) throws -> Future<User> {
+    func createHandler(_ req: Request) throws -> Future<User> {
         // parse the incoming data, because we conformed User to Content
         return try req.content.decode(User.self).flatMap { user in
             return user.save(on: req)
@@ -22,7 +22,7 @@ struct UsersController: RouteCollection {
     }
     
     // get list of all users
-    func getAllUsersHandler(_ req: Request) -> Future<[User]> {
+    func getAllHandler(_ req: Request) -> Future<[User]> {
         return User.query(on: req).all()
     }
     

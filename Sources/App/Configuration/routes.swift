@@ -24,5 +24,7 @@ public func routes(_ router: Router) throws {
     let auctionsController = AuctionsController()
     try router.register(collection: auctionsController)
     
+    let categoriesController = CategoriesController()
+    try router.register(collection: categoriesController)
     
 }
