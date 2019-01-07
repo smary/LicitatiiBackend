@@ -5,6 +5,7 @@ struct UsersController: RouteCollection {
         let usersRoute = router.grouped("api", "users")
         usersRoute.post(use: createHandler)
         usersRoute.get(use: getAllHandler)
+        usersRoute.delete(User.parameter, use: deleteHandler)
         usersRoute.get(User.parameter, "initiatedAuctions", use:getInitiatedAuctionsHandler)
         usersRoute.get(User.parameter, "activeAuctions", use:getActiveAuctionsHandler)
         usersRoute.post(User.parameter, "activeAuctions", Auction.parameter, use:addAuctionHandler)
@@ -13,13 +14,21 @@ struct UsersController: RouteCollection {
     
     // MARK: - CRUD operations
     
-    // create user
+    // Saves a decoded User to the database
     func createHandler(_ req: Request) throws -> Future<User> {
         // parse the incoming data, because we conformed User to Content
         return try req.content.decode(User.self).flatMap { user in
             return user.save(on: req)
         }
     }
+    
+    /// Deletes a parameterized `User`.
+    func deleteHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try req.parameters.next(User.self).flatMap { user in
+            return user.delete(on: req)
+        }.transform(to: .ok)
+    }
+
     
     // get list of all users
     func getAllHandler(_ req: Request) -> Future<[User]> {

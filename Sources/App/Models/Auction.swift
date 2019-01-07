@@ -1,7 +1,7 @@
-import FluentSQLite
+import FluentMySQL
 import Vapor
 
-final class Auction: SQLiteModel {
+final class Auction: MySQLModel {
     //    Fluent automatically looks for a property called id that stores an optional integer.
     var id: Int? // optional because it will be initialized when adding it to the database
     

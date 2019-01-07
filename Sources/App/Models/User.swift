@@ -1,8 +1,8 @@
-import FluentSQLite
+import FluentMySQL
 import Vapor
 
 
-final class User: SQLiteUUIDModel {
+final class User: MySQLUUIDModel {
     var id: UUID?
     
     var username: String

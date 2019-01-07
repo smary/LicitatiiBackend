@@ -1,7 +1,7 @@
-import FluentSQLite
+import FluentMySQL
 import Vapor
 
-final class AuctionCategoryPivot: SQLiteUUIDPivot {
+final class AuctionCategoryPivot: MySQLUUIDPivot {
     var id: UUID?
     
     var auctionID: Auction.ID
